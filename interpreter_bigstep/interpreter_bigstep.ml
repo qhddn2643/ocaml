@@ -12,7 +12,7 @@ let rec string_of_exp (e : exp) = match e with
   | False -> "false"
   | If (e1, e2, e3) -> "if " ^ string_of_exp e1 ^ " then " ^ string_of_exp e2 ^ " else " ^ string_of_exp e3
   | Num e -> string_of_int e
-  | IsZero (e) -> "iszero(" ^ string_of_exp e ^ ")"
+  | IsZero (e) -> "isZero(" ^ string_of_exp e ^ ")"
   | Plus (e1, e2) -> "(" ^ string_of_exp e1 ^ " + " ^ string_of_exp e2 ^ ")"
   | Mult (e1, e2) -> "(" ^ string_of_exp e1 ^ " * " ^ string_of_exp e2 ^ ")"
 

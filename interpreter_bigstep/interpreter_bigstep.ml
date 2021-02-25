@@ -33,3 +33,32 @@ let() =
   print_endline (string_of_exp (Plus (Num 3, If( IsZero (Num 1), Plus (Num 3, Num 2), Mult (Plus (Num 5, Num 1), IsZero (True))))));
   print_endline (string_of_exp (If (If (True, True, False), Plus (Num 3, Num 2), Plus (Num 5, Num 1))));
   print_endline (string_of_exp (If (True, If (IsZero (Mult (Num 3, Num 5)), Plus (Num 3, Num 2), Plus (Num 5, Num 1)), If (True, Plus (Num 3, Num 2), Mult (Num 2, Plus (Num 3, Num 2))))));
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

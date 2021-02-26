@@ -1,0 +1,64 @@
+exception Eval_Error
+
+type exp =
+  | True
+  | False
+  | If of exp * exp * exp
+  | Num of int
+  | IsZero of exp
+  | Plus of exp * exp
+  | Mult of exp * exp
+
+(* Syntax *)
+let rec string_of_exp (e : exp) = match e with
+  | True -> "true"
+  | False -> "false"
+  | If (e1, e2, e3) -> "if " ^ string_of_exp e1 ^ " then " ^ string_of_exp e2 ^ " else " ^ string_of_exp e3
+  | Num e -> string_of_int e
+  | IsZero (e) -> "isZero(" ^ string_of_exp e ^ ")"
+  | Plus (e1, e2) -> "(" ^ string_of_exp e1 ^ " + " ^ string_of_exp e2 ^ ")"
+  | Mult (e1, e2) -> "(" ^ string_of_exp e1 ^ " * " ^ string_of_exp e2 ^ ")"
+
+(* Big-Step Semantics *)
+let eval (e : exp) = match e with
+  (*| Num e -> Num e
+  | Plus (e1, e2) -> match e1 with 
+  | Num (n1) -> match e2 with (* it's not a number Eval_Error *)
+  | Num (n2) -> Num (n1 + n2)
+  | Mult (e1, e2) => match eval e1 with 
+  | Num (n1) match eval e2 with   (* it's not a number Eval_Error *)
+  | Num (n2) -> Num (n1 * n2)*)
+  | True -> If(true, true, false)
+  | False -> If(false, false, true)
+  | IsZero (e) -> match e with | If(0, true, false)
+  | If (true, e2, e3) -> e1
+  | If (false, e2, e3) -> e2
+  | If (e, e1, e2) -> match e with 
+  | Num (n) -> raise Eval_Error
+  | _ -> let mystep = step e' in If(e', e1, e2)
+  | v -> raise Eval_Error
+
+
+let() =
+(*print_endline (string_of_exp (Num 3));
+  print_endline (string_of_exp (True));
+  print_endline (string_of_exp (False));
+  print_endline (string_of_exp (Plus (Num 3, Num 2)));
+  print_endline (string_of_exp (Mult (Num 3, Num 2)));
+  print_endline (string_of_exp (Plus (Num 3, Plus (Num 3, Mult (Num 2, Plus (Num 3, Num 2))))));
+  print_endline (string_of_exp (If (True, Num 3, Num 5)));
+  print_endline (string_of_exp (If (False, Plus (Num 3, Num 2), Plus (Num 5, Num 1))));
+  print_endline (string_of_exp (If (Plus (False, True), Plus (Num 3, False), Mult (Num 3, Num 1))));
+  print_endline (string_of_exp (If (IsZero (Num 1), Plus (Num 3, Num 2), Plus (Num 5, Num 1))));
+  print_endline (string_of_exp (IsZero (Mult (Num 3, Num 5))));
+  print_endline (string_of_exp (IsZero (If (IsZero (Num 1), Plus (Num 3, Num 2), Plus (Num 5, Num 1)))));
+  print_endline (string_of_exp (Plus (Num 3, If( IsZero (Num 1), Plus (Num 3, Num 2), Plus (Num 5, Num 1)))));
+  print_endline (string_of_exp (Plus (Num 3, If( IsZero (Num 1), Plus (Num 3, Num 2), Mult (Plus (Num 5, Num 1), IsZero (True))))));
+  print_endline (string_of_exp (If (If (True, True, False), Plus (Num 3, Num 2), Plus (Num 5, Num 1))));
+  print_endline (string_of_exp (If (True, If (IsZero (Mult (Num 3, Num 5)), Plus (Num 3, Num 2), Plus (Num 5, Num 1)), If (True, Plus (Num 3, Num 2), Mult (Num 2, Plus (Num 3, Num 2)))))) ;*)
+  print_endline (eval (True));
+  print_endline (eval (False));
+  print_endline (eval (IsZero(0)));
+
+
+

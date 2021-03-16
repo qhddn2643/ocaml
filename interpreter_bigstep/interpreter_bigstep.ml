@@ -10,6 +10,7 @@ type exp =
   | Plus of exp * exp
   | Mult of exp * exp
 
+
 (* Syntax *)
 let rec string_of_exp (e : exp) = match e with
   | True -> "true"
@@ -28,18 +29,13 @@ let rec eval (e : exp) = match e with
   | If (True, e2, e3) -> if string_of_exp e2 = "false" then eval (False) else eval (True)
   | If (False, e2, e3) -> if string_of_exp e3 = "true" then eval (True) else eval (False)
   | If (False, e2, e3) -> if string_of_exp e3 = "false" then eval (False) else eval (True)
-  | Num e -> string_of_exp(Num e)
-  | IsZero (e) -> if string_of_exp e = "0" then eval (True) else eval (False)
-  | Plus (e1, e2) -> match e1 with
-  | Num (n) -> raise Eval_error 
-  | Num e1 -> match e2 with 
-  | Num (n) -> raise Eval_error
-  | Num e2 -> string_of_exp (Num (e1 + e2))
-  | Mult (e1, e2) -> match e1 with
-  | Num (n) -> raise Eval_error
-  | Num e1 -> match e2 with
-  | Num (n) -> raise Eval_error
-  | Num e2 -> string_of_exp (Num (e1 * e2))
+  | Num e -> string_of_int e
+  | IsZero (e) -> if string_of_int e = 0  then eval (True) else eval (False)
+ (* | Plus (e1, e2) -> match eval e1, eval e2 with
+                     | Num i, Num j -> Num (i + j)
+  | Mult (e1, e2) -> match eval e1, eval e2 with
+                     | Num i, Num j -> Num (i * j)*)
+
 
 
 let() =

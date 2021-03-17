@@ -30,9 +30,9 @@ let rec eval e = match e with
   | IsZero (Num 0) -> eval(True)
   | IsZero (n) -> eval(False)
   | Num n -> string_of_int n
-(*  | Plus(e1, e2) -> Num ((eval e1) + (eval e2))
+(*  | Plus(e1, e2) -> eval(e1) + eval(e2)
                 | _ -> raise Eval_error
-  | Mult(e1, e2) -> Num ((eval e1) * (eval e2))
+  | Mult(e1, e2) -> eval(e1) * eval(e2)
 		| _ -> raise Eval_error *)
 
 

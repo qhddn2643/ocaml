@@ -21,24 +21,23 @@ let rec string_of_exp (e : exp) = match e with
   | Plus (e1, e2) -> "(" ^ string_of_exp e1 ^ " + " ^ string_of_exp e2 ^ ")"
   | Mult (e1, e2) -> "(" ^ string_of_exp e1 ^ " * " ^ string_of_exp e2 ^ ")"
 
-(* Big-Step Semantics *)
-let rec eval (e : exp) = match e with
+(* Big-Step Semantics *) 
+let rec eval e = match e with
   | True -> if string_of_exp (True) = "true" then "True" else "False"
-  | False -> if string_of_exp (False) = "false" then "False" else "True"                        
-  | If (True, e2, e3) -> if string_of_exp e2 = "true" then eval (True) else eval (False)
-  | If (True, e2, e3) -> if string_of_exp e2 = "false" then eval (False) else eval (True)
-  | If (False, e2, e3) -> if string_of_exp e3 = "true" then eval (True) else eval (False)
-  | If (False, e2, e3) -> if string_of_exp e3 = "false" then eval (False) else eval (True)
-  | Num e -> string_of_int e
-  | IsZero (e) -> if string_of_int e = 0  then eval (True) else eval (False)
- (* | Plus (e1, e2) -> match eval e1, eval e2 with
-                     | Num i, Num j -> Num (i + j)
-  | Mult (e1, e2) -> match eval e1, eval e2 with
-                     | Num i, Num j -> Num (i * j)*)
-
+  | False -> if string_of_exp(False) = "false" then "False" else "True"
+  | If (True, e2, e3) -> eval(e2)
+  | If (False, e2, e3) -> eval(e3)
+  | IsZero (Num 0) -> eval(True)
+  | IsZero (n) -> eval(False)
+  | Num n -> string_of_int n
+(*  | Plus(e1, e2) -> Num ((eval e1) + (eval e2))
+                | _ -> raise Eval_error
+  | Mult(e1, e2) -> Num ((eval e1) * (eval e2))
+		| _ -> raise Eval_error *)
 
 
 let() =
+  print_endline ("");
   print_endline ("Output: Syntax");      
   print_endline (string_of_exp (Num 3));
   print_endline (string_of_exp (True));
@@ -61,8 +60,8 @@ let() =
   print_endline ("Output: Big-Step Semantics");
   print_endline (eval (True));
   print_endline (eval (False));
-  print_endline (eval (Num (0)));
-  print_endline (eval (IsZero (Num (0))));
+  print_endline (eval (Num 0));
+  print_endline (eval (IsZero (Num 0)));
   print_endline (eval (IsZero (Plus (Num 1, Num 1))));
   print_endline (eval (IsZero (Plus (Plus (Num 2, Num (-1)), Num 1))));
   print_endline (eval (Plus (Plus (Num (-1), Num 1), Plus (Num (-1), Num 1))));

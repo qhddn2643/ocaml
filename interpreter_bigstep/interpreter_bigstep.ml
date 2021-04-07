@@ -23,9 +23,7 @@ let rec string_of_exp (e : exp) = match e with
 let rec eval (e : exp) = match e with
   | True -> True
   | False -> False
-  (*| If (True, e2, e3) -> eval(e2)
-  | If (False, e2, e3) -> eval(e3)*)
-  | If (e, e1, e2) -> let e' = eval e in
+  | If (e, e1, e2) -> let e' = eval e in 
                       (match e' with
                       | True -> eval(e1)
                       | False -> eval(e2)

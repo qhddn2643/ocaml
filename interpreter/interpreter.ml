@@ -7,6 +7,8 @@ type typ =
   | TInt 
   | TArrow of typ * typ
 
+type type_environment = (string * typ) list
+
 type exp =
   | True
   | False
@@ -19,38 +21,58 @@ type exp =
   | Lambda of string * typ * exp
   | Apply of exp * exp
 
-let rec type_check (e : exp)  = match e with
+
+(*Type System*)
+let rec type_check (te : type_environment)(e : exp)  = match e with
   | True -> TBool
   | False -> TBool
-  | If (e1, e2, e3) -> if type_check e1 = TBool 
+  | If (e1, e2, e3) -> if type_check[] e1 = TBool 
                           then begin
-                                let t2 = type_check e2 in
-                                        if t2 = type_check e3 then t2
+                                  let t2 = type_check[] e2 in
+                                  if t2 = type_check[] e3 then t2
                                         else raise Type_error
                           end
                        else raise Type_error
-  | IsZero (e) -> let e' = type_check e in
+  | IsZero (e) -> let e' = type_check[] e in
                   (match e' with
                   | TInt -> TBool
                   | _ -> raise Type_error)
   | Num e -> TInt
-  | Plus(e1, e2) -> let n1 = type_check e1 in
-                    let n2 = type_check e2 in
+  | Plus(e1, e2) -> let n1 = type_check[] e1 in
+                    let n2 = type_check[] e2 in
                     (match n1, n2 with
                     | TInt, TInt -> TInt
                     | _ -> raise Type_error)
-  | Mult(e1, e2) -> let n1 = type_check e1 in
-                    let n2 = type_check e2 in
+  | Mult(e1, e2) -> let n1 = type_check[] e1 in
+                    let n2 = type_check[] e2 in
                     (match n1, n2 with
                     | TInt, TInt -> TInt
                     | _ -> raise Type_error)
-
-(*let rec free_variables (e : exp) = match e with*)
-(*let rec substitution (e1 : exp) (x : string) (e2 : exp) = match e with
-  | Var(var) -> if var = x then e2 else Var(var)
-  | Lambda(e1, x, e2) -> Lambda(e1, x, e2)*) 
+  (*| Var var -> lookup var in te
+  | Apply(n1, n2) -> Apply(substitution n1 x e2, substitution n2 x e2)
+  | Lambda(var, t, e) -> type_check(te, e)*)
 
 
+(*Lambda Calculas*)
+(*let rec free_variables (e : exp) = match e with
+  | Var(var) -> [var]
+  | Lambda(var, typ, body) -> var :: (free_variables body) 
+  | Apply(e1, e2) -> (free_variables e1) @ (free_variables e2)*)
+
+let rec substitution (e1 : exp) (x : string) (e2 : exp) = match e1 with
+  | Var var -> if var = x then e2 else Var var
+  | Apply(n1, n2) -> Apply(substitution n1 x e2, substitution n2 x e2)
+  | Lambda(var, typ, body) -> if not (x = var) then Lambda(var, typ, substitution body x e2) else Lambda(var, typ, body)
+  | True -> True
+  | False -> False
+  | If (n1, n2, n3) -> If (substitution n1 x e2, substitution n2 x e2, substitution n3 x e2) 
+  | IsZero (n) -> IsZero (substitution n x e2)
+  | Num (n) -> Num (n)
+  | Plus(n1, n2) -> Plus (substitution n1 x e2, substitution n2 x e2)
+  | Mult(n1, n2) -> Mult (substitution n1 x e2, substitution n2 x e2)
+
+
+(*Small Semantics*)
 let rec step (e : exp) = match e with
   | True -> True
   | False -> False
@@ -67,7 +89,7 @@ let rec step (e : exp) = match e with
   | Num e -> Num e
   | Plus(e1, e2) -> let n1 = step e1 in
                     let n2 = step e2 in
-                    (match n1, n2 with 
+                    (match n1, n2 with
                     | Num i, Num j -> Num(i+j)
                     | _ -> raise Eval_error)
   | Mult(e1, e2) -> let n1 = step e1 in
@@ -75,8 +97,16 @@ let rec step (e : exp) = match e with
                     (match n1, n2 with
                     | Num i, Num j -> Num(i*j)
                     | _ -> raise Eval_error)
+  | Var varname -> Var varname
+  | Lambda(var, typ, body) -> Lambda(var, typ, body)
+  | Apply (Lambda(var, typ, body), arg) -> match arg with
+                                           | True -> Num 1
+                                           | False -> Num 0
+                                           | Num n -> Num n
+                                           | _ -> raise Eval_error
 
-(*| Apply((Lambda(var, typ, body)), arg) -> match arg with*)
+
+
 
 let rec multi_step (e : exp) = match e with
   | True -> step(True)
@@ -86,10 +116,14 @@ let rec multi_step (e : exp) = match e with
   | Num e -> step(Num e)
   | Plus(e1, e2) -> step(Plus(e1, e2))
   | Mult(e1, e2) -> step(Mult(e1, e2))
+  | Var var -> step(Var var)
+  | Lambda(var, typ, body) -> step(Lambda(var, typ, body))
+  | Apply(Lambda(var, typ, body), arg) -> step(Apply(Lambda(var, typ, body), arg))
+  | Apply(e1, e2) -> step(Apply(e1, e2))
+ 
 
-
-let() =
-  (*print_endline ("");
+(*let() =
+  print_endline ("");
   print_endline ((multi_step (True)));
   print_endline ((multi_step (False)));
   print_endline ((multi_step (Num 0)));
@@ -109,9 +143,9 @@ let() =
   print_endline ((multi_step (If (IsZero (If (IsZero (Plus (Num (-1), Num 2)), Num 0, Num 1)), If (True, If (False, Mult (Num 0, Num 6), Plus (Num 0, Num 1)), Num 5), Num 5))));
   print_endline ((multi_step (If (IsZero (Plus (Num (-1), Plus (Num 1, Plus (Num (-1), Num 1)))), IsZero (True), Num 1))));
   print_endline ((multi_step (Plus (Num 1, Plus (Num (-1), If (IsZero (Plus (Num 1, If (True, Num 1, Num 2))), Plus (Num 1, Num 2), Mult (Num 2, Num 2)))))));
-  print_endline ((multi_step (Plus (Num (-1), If (IsZero (Plus (Num 5, Num (-4))), Mult (Num 123, Plus (Num 5, Num (-4))), IsZero (Num 0))))));*)
+  print_endline ((multi_step (Plus (Num (-1), If (IsZero (Plus (Num 5, Num (-4))), Mult (Num 123, Plus (Num 5, Num (-4))), IsZero (Num 0))))));
 
-(*  print_endline(""); 
+  print_endline(""); 
   print_endline("Output: Type_Check");
   print_endline(type_check True);
   print_endline(type_check False);
@@ -132,10 +166,10 @@ let() =
   print_endline ((type_check (If (IsZero (If (IsZero (Plus (Num (-1), Num 2)), Num 0, Num 1)), If (True, If (False, Mult (Num 0, Num 6), Plus (Num 0, Num 1)), Num 5), Num 5))));
   print_endline ((type_check (If (IsZero (Plus (Num (-1), Plus (Num 1, Plus (Num (-1), Num 1)))), IsZero (True), Num 1))));
   print_endline ((type_check (Plus (Num 1, Plus (Num (-1), If (IsZero (Plus (Num 1, If (True, Num 1, Num 2))), Plus (Num 1, Num 2), Mult (Num 2, Num 2)))))));
-  print_endline ((type_check (Plus (Num (-1), If (IsZero (Plus (Num 5, Num (-4))), Mult (Num 123, Plus (Num 5, Num (-4))), IsZero (Num 0))))));*)
+  print_endline ((type_check (Plus (Num (-1), If (IsZero (Plus (Num 5, Num (-4))), Mult (Num 123, Plus (Num 5, Num (-4))), IsZero (Num 0))))));
 
   print_endline("");
-  (*print_endline("Output: Lambda Expression");
+  print_endline("Output: Lambda Expression");
   print_endline(substitution (Mult (Plus (Num 5, Var "x"), Plus (Num 3, Var "x"))) "x" (Num 2));
   print_endline(substitution (If (IsZero (Var "y"), Var "y", Var "x")) "y" (Mult (Num 5, Var "x")));
   print_endline(substitution (Lambda ("x", TInt, Plus (Var "x", Num 5))) "x" (Num 0));

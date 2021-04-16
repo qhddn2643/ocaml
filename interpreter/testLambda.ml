@@ -53,6 +53,7 @@ let test_5 () =
           , Num 2 )))
     (Num 35)
 
+
 let test_6 () =
   assert_equal
     (multi_step (Lambda ("x", TInt, Plus (Var "x", Num 5))))

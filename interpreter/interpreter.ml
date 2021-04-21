@@ -1,6 +1,6 @@
 exception Eval_error
 exception Type_error
-exception Substitution_error 
+exception Substitution_error
 
 type typ = 
   | TBool 
@@ -20,8 +20,6 @@ type exp =
   | Var of string
   | Lambda of string * typ * exp
   | Apply of exp * exp
-
-
 
 
 (*Type System*)
@@ -51,10 +49,10 @@ let rec type_check (te : type_environment)(e : exp)  = match e with
                     | _ -> raise Type_error)
   | Var varname -> let (y, t) = List.find (fun (y, t) -> y = varname) te in t
   | Lambda(var, typ, body) -> TArrow(typ, type_check ((var, typ)::te) body)
-  | Apply(e1, e2) -> let t1 = type_check te e1 in
-                     let t2 = type_check te e2 in
-                     (match t1 with
-                     | TArrow(t11, t12) -> if t11 = t2 then t12 else raise Type_error
+  | Apply(e1, e2) -> let e1' = try type_check te e1 with _ -> raise Type_error in
+                     let e2' = type_check te e2 in
+                     (match e1' with
+                     | TArrow(e11, e12) -> if e11 = e2' then e12 else raise Type_error
                      | _ -> raise Type_error)
 
 
@@ -64,7 +62,7 @@ let rec free_variables (e : exp) = match e with
   | Lambda(var, typ, body) -> List.filter (fun x -> var <> x) (free_variables body) 
   | Apply(e1, e2) -> let e1' = free_variables e1 in
                      let e2' = free_variables e2 in
-                       List.append e1' (List.filter (fun x -> not (List.mem x e1')) e2')
+                     List.append e1' (List.filter (fun x -> not (List.mem x e1')) e2')
 
 let rec substitution (e1 : exp) (x : string) (e2 : exp) = match e1 with
   | Var var -> if var = x then e2 else Var var
@@ -132,6 +130,9 @@ let rec multi_step (e : exp) = match e with
   | Var var -> step(Var var)
   | Lambda(var, typ, body) -> step(Lambda(var, typ, body))
   | Apply(e1, e2) -> step(Apply(e1, e2))
+
+
+
 
   (*let() =
   print_endline ("");

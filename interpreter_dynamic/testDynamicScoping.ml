@@ -73,18 +73,18 @@ let test_7 () =
     (Num 5)
 
 let () =
-  print_endline "Dynamic scoping tests, your grade: 0.79";
+  print_endline "Dynamic scoping tests, your grade: 0.75";
   test_1 ();
-  print_endline "Test 1 passed, your grade: 0.80";
+  print_endline "Test 1 passed, your grade: 0.76";
   test_2 ();
-  print_endline "Test 2 passed, your grade: 0.81";
+  print_endline "Test 2 passed, your grade: 0.77";
   test_3 ();
-  print_endline "Test 3 passed, your grade: 0.82";
+  print_endline "Test 3 passed, your grade: 0.78";
   test_4 ();
-  print_endline "Test 4 passed, your grade: 0.83";
+  print_endline "Test 4 passed, your grade: 0.79";
   test_5 ();
-  print_endline "Test 5 passed, your grade: 0.84";
+  print_endline "Test 5 passed, your grade: 0.80";
   test_6 ();
-  print_endline "Test 6 passed, your grade: 0.85";
+  print_endline "Test 6 passed, your grade: 0.81";
   test_7 ();
-  print_endline "Test 7 passed, your grade: 0.86"
+  print_endline "Test 7 passed, your grade: 0.82";

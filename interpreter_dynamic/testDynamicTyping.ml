@@ -119,15 +119,15 @@ end
 
 let () =
   let open Dynamic_typing in
-  print_endline "Dynamic typing tests, your grade: 0.75";
+  print_endline "Dynamic typing tests, your grade: 0.82";
   test_1 ();
-  print_endline "Test 1 passed, your grade: 0.76";
+  print_endline "Test 1 passed, your grade: 0.83";
   test_2 ();
   test_3 ();
-  print_endline "Tests 2-3 passed, your grade: 0.77";
+  print_endline "Tests 2-3 passed, your grade: 0.84";
   test_4 ();
   test_5 ();
-  print_endline "Tests 4-5 passed, your grade: 0.78";
+  print_endline "Tests 4-5 passed, your grade: 0.85";
   test_6 ();
   test_7 ();
-  print_endline "Tests 6-7 passed, your grade: 0.79"
+  print_endline "Tests 6-7 passed, your grade: 0.86"

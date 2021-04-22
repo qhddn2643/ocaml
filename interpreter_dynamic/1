@@ -83,17 +83,8 @@ let rec multi_step (env : environment) (e : exp) : (environment * exp) = match e
   | Let(x, e1, e2) -> match e2 with
                       | Var var -> if var = x then (env, e1) else (env, Var var)
                       | Num n -> (env, Num n)
-                      | Plus(n1, Num n) -> (match n1 with 
-                                        | (Var var) -> match e1 with 
-                                                       | Num i -> if var = x 
-                                                                  then if e1 = Num i then (env, Num(i+n)) else (env, TypeError)
-                                                                  else (env, Var var))
-                      | Mult(n1, Num n) -> (match n1 with 
-                                        | (Var var) -> match e1 with
-                                                       | Num i -> if var = x 
-                                                                  then if e2 = Num i then (env, Num(i*n)) else (env, TypeError)
-                                                                  else (env, Var var))
-                      | Let(var, n1, n2) -> let var = multi_step env n1 in multi_step env n2
+                      | Plus(n1, n2) -> if n1 = Var x then (env, e1) else (env, Var var)
+                      | Mult(n1, n2) -> if n1 = Var x then (env, e1) else (env, Var var)
                       | _ -> env, TypeError
 
 

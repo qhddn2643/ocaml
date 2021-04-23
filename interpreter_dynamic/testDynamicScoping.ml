@@ -15,15 +15,13 @@ let test_2 () =
 let test_3 () =
   assert_equal
     ( multi_step []
-        (Let ("x", Num 3, Let ("y", Num 5, Mult (Var "x", Var "y"))))
-    |> snd )
+        (Let ("x", Num 3, Let ("y", Num 5, Mult (Var "x", Var "y")))) |> snd )
     (Num 15)
 
 let test_4 () =
   assert_equal
     ( multi_step []
-        (Let ("x", Num 3, Let ("x", Num 5, Mult (Var "x", Var "x"))))
-    |> snd )
+        (Let ("x", Num 3, Let ("x", Num 5, Mult (Var "x", Var "x")))) |> snd )
     (Num 25)
 
 let test_5 () =
@@ -33,8 +31,7 @@ let test_5 () =
            ( Apply
                ( Lambda ("b", If (Var "b", Let ("x", Num 2, Num 1), Num 0))
                , True )
-           , Var "x" ))
-    |> snd )
+           , Var "x" )) |> snd )
     (Num 2)
 
 let test_6 () =
@@ -52,8 +49,7 @@ let test_6 () =
                            , Num 6
                            , Let ("x", Plus (Var "n", Num 1), Var "n") ) ) )
                , Num 0 )
-           , Var "x" ))
-    |> snd )
+           , Var "x" )) |> snd )
     (Num 5)
 
 let test_7 () =
@@ -68,8 +64,7 @@ let test_7 () =
                , Let
                    ( "g"
                    , Lambda ("a", Let ("x", Num 2, Apply (Var "f", Var "a")))
-                   , Apply (Var "g", Num 3) ) ) ))
-    |> snd )
+                   , Apply (Var "g", Num 3) ) ) )) |> snd )
     (Num 5)
 
 let () =

@@ -18,27 +18,27 @@ type environment = (string * exp) list
 let rec multi_step (env : environment) (e : exp) : (environment * exp) = match e with
   | True -> (env, True)
   | False -> (env, False)
-  | If (e, e1, e2) -> let e' = multi_step env e in
+  | If (e, e1, e2) -> let e' = try multi_step env e with _ -> (env, TypeError) in
                       (match e' with
                       | (env, True) -> multi_step env e1
                       | (env, False) -> multi_step env e2
                       | _ -> env, TypeError)
-  | IsZero (e) -> let e' = multi_step env e in
+  | IsZero (e) -> let e' = try multi_step env e with _ -> (env, TypeError) in
                   (match e' with
                   | (env, Num 0) -> (env, True)
                   | (env, Num n) -> (env, False)
                   | _ -> env, TypeError)
   | Num e -> (env, Num e)
-  | Plus(e1, e2) -> let n1 = multi_step env e1 in
+  | Plus(e1, e2) -> let n1 = try multi_step env e1 with _ -> (env, TypeError) in
                     (match n1 with
-                    | (env, Num i) -> let n2 = multi_step env e2 in
+                    | (env, Num i) -> let n2 = try multi_step env e2 with _ -> (env, TypeError) in
                                       (match n2 with
                                       | (env, Num j) -> (env, Num(i+j))
                                       | _ -> env, TypeError)
                     | _ -> env, TypeError)                  
-  | Mult(e1, e2) -> let n1 = multi_step env e1 in
+  | Mult(e1, e2) -> let n1 = try multi_step env e1 with _ -> (env, TypeError) in
                     (match n1 with
-                    | (env, Num i) -> let n2 = multi_step env e2 in
+                    | (env, Num i) -> let n2 = try multi_step env e2 with _ -> (env, TypeError) in
                                       (match n2 with
                                       | (env, Num j) -> (env, Num(i*j))
                                       | _ -> env, TypeError)

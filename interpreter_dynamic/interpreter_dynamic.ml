@@ -35,115 +35,21 @@ let rec multi_step (env : environment) (e : exp) : (environment * exp) = match e
                                       (match n2 with
                                       |  env, Num j -> (env, Num(i+j))
                                       | _ -> env, TypeError)
-                    | (env, Apply(e1', e2')) -> let n2 = multi_step env e2 in
-                                                match n2 with
-                                                | env, Var e22 -> let e1'' = multi_step env e1' in
-                                                                  match e1'' with
-                                                                  | (env, Lambda(var, body)) -> match body with
-                                                                                                | If(Var v, a, b) -> match a with 
-                                                                                                                  | Let(v', Num i, Num j) -> match b with
-                                                                                                                                             | Num k -> if var = v && e22 = v'
-                                                                                                                                                        then if e2' = True
-                                                                                                                                                        then (env, Num(i+j))
-                                                                                                                                                        else if e2' = False
-                                                                                                                                                                then (env, Num(i+k))
-                                                                                                                                                                else (env, TypeError)
-                                                                                                                                                        else (env, TypeError)
-                                                                                                                                              | _ -> (env, TypeError)
-                                                                                                                   | _ -> (env, TypeError)                              
-                                                                                                | _ -> (env, TypeError)
-                                                                  | _ -> (env, TypeError)
-                                                | _ -> (env, TypeError)
-                    | _ -> (env, TypeError)
-  | _ -> (env, TypeError))
+                    | _ -> env, TypeError)                  
   | Mult(e1, e2) -> let n1 = multi_step env e1 in
                     (match n1 with
                     | (env, Num i) -> let n2 = multi_step env e2 in
                                       (match n2 with
-                                      |  env, Num j -> (env, Num(i+j))
+                                      |  env, Num j -> (env, Num(i*j))
                                       | _ -> env, TypeError)
-                    | (env, Apply(e1', e2')) -> let n2 = multi_step env e2 in
-                                                match n2 with
-                                                | env, Var e22 -> let e1'' = multi_step env e1' in
-                                                                  match e1'' with
-                                                                  | (env, Lambda(var, body)) -> match body with
-                                                                                                | If(Var v, a, b) -> match a with 
-                                                                                                                  | Let(v', Num i, Num j) -> match b with
-                                                                                                                                             | Num k -> if var = v && e22 = v'
-                                                                                                                                                        then if e2' = True
-                                                                                                                                                        then (env, Num(i*j))
-                                                                                                                                                        else if e2' = False
-                                                                                                                                                                then (env, Num(i*k))
-                                                                                                                                                                else (env, TypeError)
-                                                                                                                                                        else (env, TypeError)
-                                                                                                                                              | _ -> (env, TypeError)
-                                                                                                                   | _ -> (env, TypeError)                              
-                                                                                                | _ -> (env, TypeError)
-                                                                  | _ -> (env, TypeError)
-                                                | _ -> (env, TypeError)
-                    | _ -> (env, TypeError)
-  | _ -> (env, TypeError))
-  | Var varname -> (env, Var varname)
-  | Lambda(var, body) -> (env, Lambda(var, body))
-  | Apply(e1, e2) -> (env, Apply(e1, e2))
-  | Let(x, e1, e2) -> match e2 with
-                      | Var var -> if var = x 
-                                   then (env, e1) 
-                                   else (env, Var var)
-                      | Num e -> (env, Num e)
-                      | Plus(n1, Num n) -> (match n1 with
-                                            | Var var -> (match e1 with
-                                                         | Num i -> if var = x
-                                                                    then if e1 = Num i
-                                                                         then (env, Num(i+n))
-                                                                         else (env, TypeError)
-                                                                    else (env, Var var))
-                                            | _ -> env, TypeError)
-                      | Mult(n1, Num n) -> (match n1 with
-                                           | Var var -> (match e1 with
-                                                        | Num i -> if var = x
-                                                                   then if e1 = Num i
-                                                                        then (env, Num(i*n))
-                                                                        else (env, TypeError)
-                                                                   else (env, Var var))
-                                           | _ -> env, TypeError)
-                      | Let(y, n1, n2) -> match n2 with
-                                          | Mult(a, b) -> match a with
-                                                          | Var v1 -> match e1 with
-                                                                      | Num i -> match b with
-                                                                                 | Var v2 -> match n1 with
-                                                                                             | Num j -> if v1 <> y
-                                                                                                        then if e1 = Num i && n1 = Num j
-                                                                                                             then env, Num(i*j)
-                                                                                                             else (env, TypeError)
-                                                                                                        else if v1 = y
-                                                                                                             then if n1 = Num j
-                                                                                                                  then env, Num(j*j)
-                                                                                                                  else (env, TypeError)
-                                                                                                             else (env, TypeError)
-                                                                                             | _ -> (env, TypeError)
-                                                                                 | _ -> (env, TypeError)
-                                                                      | _ -> (env, TypeError)
-                                                          | _ -> (env, TypeError)            
-                                          | Plus(a, b) -> match a with
-                                                          | Var v1 -> match e1 with
-                                                                      | Num i -> match b with
-                                                                                 | Var v2 -> match n1 with
-                                                                                             | Num j -> if v1 <> y
-                                                                                                        then if e1 = Num i && n1 = Num j
-                                                                                                             then env, Num(i+j)
-                                                                                                             else (env, TypeError)
-                                                                                                        else if v1 = y
-                                                                                                             then if n1 = Num j
-                                                                                                                  then env, Num(j+j)
-                                                                                                                  else (env, TypeError)
-                                                                                                             else (env, TypeError)
-                                                                                             | _ -> (env, TypeError)
-                                                                                 | _ -> (env, TypeError)
-                                                                      | _ -> (env, TypeError)
-                                                          | _ -> (env, TypeError)
-                                          | _ -> (env, TypeError)
-                          | _ -> (env, TypeError)
+                    | _ -> env, TypeError)
+  | Var varname -> let (y, t) = List.find (fun (y, t) -> y = varname) env in (env, t)
+  | Lambda(var, body) -> env, Lambda(var, body) 
+  | Apply(e1, e2) -> let e1' = try multi_step env e1 with _ -> env, TypeError in
+                     (match e1' with
+                     | env, Lambda(var, body) -> env, Let(var, e2, body)
+                     | _ -> env, TypeError)
+  | Let(x, e1, e2) -> multi_step ((x, e1)::env) e2
 
 
 

@@ -64,7 +64,7 @@ let test_7 () =
                , Let
                    ( "g"
                    , Lambda ("a", Let ("x", Num 2, Apply (Var "f", Var "a")))
-                   , Apply (Var "g", Num 3) ) ) )) |> snd )
+                   , Apply (Var "g", Num 3) ) ) )) |> snd ) 
     (Num 5)
 
 let () =
